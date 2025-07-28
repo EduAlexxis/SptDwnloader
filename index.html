@@ -22,7 +22,6 @@
       --text-secondary: #8b949e;
       --accent-purple: #8b5cf6;
       --accent-blue: #3b82f6;
-      --shadow-glow: 0 0 50px rgba(29, 185, 84, 0.3);
     }
 
     body {
@@ -30,95 +29,31 @@
       color: var(--text-primary);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
       min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
     }
 
-    /* Animated background particles */
-    .bg-particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .particle {
-      position: absolute;
-      background: radial-gradient(circle, var(--primary-green) 0%, transparent 70%);
-      border-radius: 50%;
-      animation: float 20s infinite linear;
-      opacity: 0.1;
-    }
-
-    @keyframes float {
-      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.1; }
-      90% { opacity: 0.1; }
-      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-    }
-
-    /* Header with glassmorphism */
+    /* Header */
     header {
       background: rgba(29, 185, 84, 0.1);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--glass-border);
       padding: 2rem 0;
       text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(29, 185, 84, 0.1), transparent);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-    }
-
-    .header-content {
-      position: relative;
-      z-index: 2;
     }
 
     .logo {
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-size: 3rem;
       font-weight: 800;
       background: linear-gradient(135deg, #1DB954, #1ed760, #3b82f6);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
-      animation: logoGlow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes logoGlow {
-      from { filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.5)); }
-      to { filter: drop-shadow(0 0 20px rgba(29, 185, 84, 0.8)); }
     }
 
     .tagline {
       color: var(--text-secondary);
       font-size: 1.1rem;
       font-weight: 300;
-      opacity: 0;
-      animation: fadeInUp 1s ease-out 0.5s forwards;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Main container */
@@ -126,7 +61,6 @@
       max-width: 800px;
       margin: 0 auto;
       padding: 3rem 2rem;
-      position: relative;
     }
 
     /* Search section */
@@ -137,24 +71,7 @@
       border-radius: 24px;
       padding: 2.5rem;
       margin-bottom: 3rem;
-      box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-      animation: slideInDown 0.8s ease-out;
-    }
-
-    @keyframes slideInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .search-section:hover {
-      transform: translateY(-5px);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 0 0 1px rgba(29, 185, 84, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     .input-container {
@@ -171,14 +88,12 @@
       color: var(--text-primary);
       font-size: 1.1rem;
       transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
     }
 
     .search-input:focus {
       outline: none;
       border-color: var(--primary-green);
       background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.1);
     }
 
     .search-icon {
@@ -188,12 +103,6 @@
       transform: translateY(-50%);
       color: var(--text-secondary);
       font-size: 1.2rem;
-      transition: all 0.3s ease;
-    }
-
-    .search-input:focus + .search-icon {
-      color: var(--primary-green);
-      transform: translateY(-50%) scale(1.1);
     }
 
     .search-btn {
@@ -206,20 +115,6 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
-    }
-
-    .search-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: all 0.5s;
     }
 
     .search-btn:hover {
@@ -227,15 +122,7 @@
       box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);
     }
 
-    .search-btn:hover::before {
-      left: 100%;
-    }
-
-    .search-btn:active {
-      transform: translateY(0);
-    }
-
-    /* Loading state */
+    /* Loading */
     .loading {
       display: none;
       text-align: center;
@@ -245,12 +132,6 @@
 
     .loading.active {
       display: block;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
     }
 
     .spinner {
@@ -268,10 +149,10 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Results section */
+    /* Results */
     .results {
       opacity: 0;
-      transition: all 0.5s ease;
+      transition: opacity 0.5s ease;
     }
 
     .results.visible {
@@ -286,47 +167,12 @@
       padding: 1.8rem;
       margin-bottom: 1.5rem;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      animation: slideInUp 0.6s ease-out forwards;
-      transform: translateY(30px);
-      opacity: 0;
-    }
-
-    .song-card:nth-child(1) { animation-delay: 0.1s; }
-    .song-card:nth-child(2) { animation-delay: 0.2s; }
-    .song-card:nth-child(3) { animation-delay: 0.3s; }
-    .song-card:nth-child(4) { animation-delay: 0.4s; }
-    .song-card:nth-child(5) { animation-delay: 0.5s; }
-
-    @keyframes slideInUp {
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .song-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(29, 185, 84, 0.1), transparent);
-      transition: all 0.6s;
     }
 
     .song-card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-5px);
       border-color: rgba(29, 185, 84, 0.3);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(29, 185, 84, 0.2);
-    }
-
-    .song-card:hover::before {
-      left: 100%;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
     }
 
     .song-info {
@@ -345,12 +191,6 @@
       justify-content: center;
       font-size: 1.5rem;
       margin-right: 1rem;
-      animation: rotate 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes rotate {
-      from { transform: rotate(-5deg); }
-      to { transform: rotate(5deg); }
     }
 
     .song-details h3 {
@@ -380,7 +220,6 @@
       cursor: pointer;
       font-weight: 500;
       transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -401,12 +240,170 @@
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
 
-    .download-btn:hover {
-      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    .album-btn:hover {
-      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    /* Queue Styles */
+    .download-queue {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 350px;
+      max-height: 70vh;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      transform: translateX(400px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .download-queue.visible {
+      transform: translateX(0);
+    }
+
+    .queue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .queue-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .queue-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .queue-close:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .queue-items {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .queue-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .queue-item.completed {
+      border-color: rgba(29, 185, 84, 0.3);
+      background: rgba(29, 185, 84, 0.1);
+    }
+
+    .queue-item.failed {
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .queue-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+
+    .queue-song-info h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .queue-song-info p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .queue-status {
+      font-size: 1.2rem;
+    }
+
+    .queue-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+      color: white;
+      border: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .queue-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .queue-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ef4444;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(0);
+      transition: all 0.3s ease;
+    }
+
+    .queue-badge.visible {
+      transform: scale(1);
+    }
+
+    .empty-queue {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-queue-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
     }
 
     .no-results {
@@ -417,12 +414,6 @@
       backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
 
     .no-results-icon {
@@ -431,7 +422,7 @@
       opacity: 0.5;
     }
 
-    /* Responsive design */
+    /* Mobile responsive */
     @media (max-width: 768px) {
       .container {
         padding: 2rem 1rem;
@@ -448,39 +439,48 @@
       .action-btn {
         justify-content: center;
       }
-    }
 
-    /* Scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
+      .download-queue {
+        width: calc(100vw - 40px);
+        right: 20px;
+        left: 20px;
+        transform: translateY(100vh);
+      }
 
-    ::-webkit-scrollbar-track {
-      background: var(--bg-primary);
-    }
+      .download-queue.visible {
+        transform: translateY(0);
+      }
 
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(var(--primary-green), var(--accent-purple));
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(var(--dark-green), var(--accent-blue));
+      .queue-toggle {
+        bottom: 20px;
+        top: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Animated background particles -->
-  <div class="bg-particles">
-    <div class="particle" style="width: 4px; height: 4px; left: 10%; animation-delay: 0s;"></div>
-    <div class="particle" style="width: 6px; height: 6px; left: 20%; animation-delay: 2s;"></div>
-    <div class="particle" style="width: 3px; height: 3px; left: 30%; animation-delay: 4s;"></div>
-    <div class="particle" style="width: 5px; height: 5px; left: 40%; animation-delay: 6s;"></div>
-    <div class="particle" style="width: 4px; height: 4px; left: 50%; animation-delay: 8s;"></div>
-    <div class="particle" style="width: 7px; height: 7px; left: 60%; animation-delay: 10s;"></div>
-    <div class="particle" style="width: 3px; height: 3px; left: 70%; animation-delay: 12s;"></div>
-    <div class="particle" style="width: 5px; height: 5px; left: 80%; animation-delay: 14s;"></div>
-    <div class="particle" style="width: 4px; height: 4px; left: 90%; animation-delay: 16s;"></div>
+  <!-- Download Queue Toggle Button -->
+  <button class="queue-toggle" onclick="toggleQueue()" id="queueToggle">
+    📥
+    <span class="queue-badge" id="queueBadge">0</span>
+  </button>
+
+  <!-- Download Queue Panel -->
+  <div class="download-queue" id="downloadQueue">
+    <div class="queue-header">
+      <div class="queue-title">
+        <span>📥</span>
+        <span>Download Queue</span>
+      </div>
+      <button class="queue-close" onclick="toggleQueue()">×</button>
+    </div>
+    <div class="queue-items" id="queueItems">
+      <div class="empty-queue">
+        <div class="empty-queue-icon">🎵</div>
+        <p>No downloads yet</p>
+        <small>Downloaded songs will appear here</small>
+      </div>
+    </div>
   </div>
 
   <header>
@@ -511,20 +511,126 @@
 
   <script>
     const backendUrl = "https://aca0423d6131.ngrok-free.app";
+    let downloadQueue = [];
+    let queueVisible = false;
 
-    // Add enter key support
-    document.getElementById("songInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        searchSong();
+    // Simple initialization without complex DOM manipulation
+    function init() {
+      console.log('App starting...');
+      
+      // Add enter key support
+      const songInput = document.getElementById("songInput");
+      if (songInput) {
+        songInput.addEventListener("keypress", function(e) {
+          if (e.key === "Enter") {
+            searchSong();
+          }
+        });
       }
-    });
+    }
+
+    function toggleQueue() {
+      const queue = document.getElementById('downloadQueue');
+      queueVisible = !queueVisible;
+      
+      if (queueVisible) {
+        queue.classList.add('visible');
+      } else {
+        queue.classList.remove('visible');
+      }
+    }
+
+    function updateQueueBadge() {
+      const badge = document.getElementById('queueBadge');
+      const activeDownloads = downloadQueue.filter(item => 
+        item.status === 'downloading' || item.status === 'pending'
+      ).length;
+      
+      badge.textContent = activeDownloads;
+      
+      if (activeDownloads > 0) {
+        badge.classList.add('visible');
+      } else {
+        badge.classList.remove('visible');
+      }
+    }
+
+    function addToQueue(songName, artist, url) {
+      const queueItem = {
+        id: Date.now() + Math.random(),
+        songName,
+        artist,
+        url,
+        status: 'pending'
+      };
+      
+      downloadQueue.push(queueItem);
+      updateQueueDisplay();
+      updateQueueBadge();
+      
+      return queueItem.id;
+    }
+
+    function updateQueueItem(id, status) {
+      const item = downloadQueue.find(item => item.id === id);
+      if (item) {
+        item.status = status;
+        updateQueueDisplay();
+        updateQueueBadge();
+      }
+    }
+
+    function updateQueueDisplay() {
+      const queueItems = document.getElementById('queueItems');
+      
+      if (downloadQueue.length === 0) {
+        queueItems.innerHTML = `
+          <div class="empty-queue">
+            <div class="empty-queue-icon">🎵</div>
+            <p>No downloads yet</p>
+            <small>Downloaded songs will appear here</small>
+          </div>
+        `;
+        return;
+      }
+      
+      queueItems.innerHTML = downloadQueue.map(item => {
+        let statusIcon = '⏳';
+        let statusClass = '';
+        
+        switch (item.status) {
+          case 'downloading':
+            statusIcon = '⬇️';
+            break;
+          case 'completed':
+            statusIcon = '✅';
+            statusClass = 'completed';
+            break;
+          case 'failed':
+            statusIcon = '❌';
+            statusClass = 'failed';
+            break;
+        }
+        
+        return `
+          <div class="queue-item ${statusClass}">
+            <div class="queue-item-header">
+              <div class="queue-song-info">
+                <h4>${escapeHtml(item.songName)}</h4>
+                <p>by ${escapeHtml(item.artist)}</p>
+              </div>
+              <div class="queue-status">${statusIcon}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
     async function searchSong() {
       const song = document.getElementById("songInput").value.trim();
       const resultsDiv = document.getElementById("results");
       const loadingDiv = document.getElementById("loading");
       
-      // Reset results
       resultsDiv.innerHTML = "";
       resultsDiv.classList.remove("visible");
       
@@ -533,19 +639,24 @@
         return;
       }
 
-      // Show loading
       loadingDiv.classList.add("active");
 
       try {
         const res = await fetch(`${backendUrl}/search`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true"
+          },
           body: JSON.stringify({ query: song })
         });
 
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+
         const songs = await res.json();
         
-        // Hide loading
         loadingDiv.classList.remove("active");
 
         if (!Array.isArray(songs) || songs.length === 0) {
@@ -553,7 +664,6 @@
           return;
         }
 
-        // Display results
         displaySongs(songs);
         
       } catch (err) {
@@ -566,10 +676,9 @@
       const resultsDiv = document.getElementById("results");
       resultsDiv.innerHTML = "";
 
-      songs.forEach((song, index) => {
+      songs.forEach((song) => {
         const songCard = document.createElement("div");
         songCard.classList.add("song-card");
-        songCard.style.animationDelay = `${index * 0.1}s`;
         
         songCard.innerHTML = `
           <div class="song-info">
@@ -580,7 +689,7 @@
             </div>
           </div>
           <div class="song-actions">
-            <button class="action-btn download-btn" onclick='downloadSong("${escapeHtml(song.url)}")'>
+            <button class="action-btn download-btn" onclick='downloadSong("${escapeHtml(song.url)}", "${escapeHtml(song.name)}", "${escapeHtml(song.artist)}")'>
               <span>⬇️</span>
               <span>Download</span>
             </button>
@@ -594,7 +703,6 @@
         resultsDiv.appendChild(songCard);
       });
 
-      // Show results with animation
       setTimeout(() => {
         resultsDiv.classList.add("visible");
       }, 100);
@@ -612,47 +720,56 @@
       resultsDiv.classList.add("visible");
     }
 
-    async function downloadSong(songUrl) {
+    async function downloadSong(songUrl, songName, artist) {
+      const queueId = addToQueue(songName, artist, songUrl);
+      
+      if (!queueVisible) {
+        setTimeout(() => toggleQueue(), 500);
+      }
+      
       try {
-        // Add loading state to button
         const downloadBtn = event.target.closest('.download-btn');
-        const originalText = downloadBtn.innerHTML;
-        downloadBtn.innerHTML = `<span>⏳</span><span>Downloading...</span>`;
-        downloadBtn.disabled = true;
+        if (downloadBtn) {
+          const originalText = downloadBtn.innerHTML;
+          downloadBtn.innerHTML = `<span>📥</span><span>Added to Queue</span>`;
+          downloadBtn.disabled = true;
+          
+          setTimeout(() => {
+            downloadBtn.innerHTML = originalText;
+            downloadBtn.disabled = false;
+          }, 2000);
+        }
+
+        updateQueueItem(queueId, 'downloading');
 
         const res = await fetch(`${backendUrl}/download`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true"
+          },
           body: JSON.stringify({ url: songUrl })
         });
 
         const data = await res.json();
         
-        // Restore button
-        downloadBtn.innerHTML = originalText;
-        downloadBtn.disabled = false;
-
         if (data.file_url) {
-          // Success animation
-          downloadBtn.innerHTML = `<span>✅</span><span>Downloaded!</span>`;
-          setTimeout(() => {
-            downloadBtn.innerHTML = originalText;
-          }, 2000);
+          updateQueueItem(queueId, 'completed');
           
-          window.location.href = backendUrl + data.file_url;
+          // Create download link
+          const downloadLink = document.createElement('a');
+          downloadLink.href = backendUrl + data.file_url;
+          downloadLink.download = `${songName} - ${artist}.mp3`;
+          downloadLink.style.display = 'none';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          
         } else {
-          throw new Error("Download failed");
+          throw new Error("Download failed - no file URL received");
         }
       } catch (err) {
-        // Restore button on error
-        const downloadBtn = event.target.closest('.download-btn');
-        downloadBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
-        downloadBtn.disabled = false;
-        
-        setTimeout(() => {
-          downloadBtn.innerHTML = `<span>⬇️</span><span>Download</span>`;
-        }, 2000);
-        
+        updateQueueItem(queueId, 'failed');
         alert("Download failed: " + err.message);
       }
     }
@@ -660,97 +777,40 @@
     async function getAlbum(songUrl) {
       try {
         const albumBtn = event.target.closest('.album-btn');
-        const originalText = albumBtn.innerHTML;
-        albumBtn.innerHTML = `<span>⏳</span><span>Loading...</span>`;
-        albumBtn.disabled = true;
+        if (albumBtn) {
+          const originalText = albumBtn.innerHTML;
+          albumBtn.innerHTML = `<span>⏳</span><span>Loading...</span>`;
+          albumBtn.disabled = true;
 
-        const res = await fetch(`${backendUrl}/album-tracks`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: songUrl })
-        });
+          const res = await fetch(`${backendUrl}/album-tracks`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true"
+            },
+            body: JSON.stringify({ url: songUrl })
+          });
 
-        const data = await res.json();
-        
-        // Restore button
-        albumBtn.innerHTML = originalText;
-        albumBtn.disabled = false;
-        
-        // Create a better modal for album tracks
-        showAlbumModal(data);
-        
+          const data = await res.json();
+          
+          albumBtn.innerHTML = originalText;
+          albumBtn.disabled = false;
+          
+          alert("Album Tracks:\n" + JSON.stringify(data, null, 2));
+        }
       } catch (err) {
         const albumBtn = event.target.closest('.album-btn');
-        albumBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
-        albumBtn.disabled = false;
-        
-        setTimeout(() => {
-          albumBtn.innerHTML = `<span>🎧</span><span>Album Tracks</span>`;
-        }, 2000);
+        if (albumBtn) {
+          albumBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
+          albumBtn.disabled = false;
+          
+          setTimeout(() => {
+            albumBtn.innerHTML = `<span>🎧</span><span>Album Tracks</span>`;
+          }, 2000);
+        }
         
         alert("Error loading album: " + err.message);
       }
-    }
-
-    function showAlbumModal(data) {
-      // Create a styled modal instead of alert
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-      `;
-      
-      modal.innerHTML = `
-        <div style="
-          background: var(--glass-bg);
-          backdrop-filter: blur(20px);
-          border: 1px solid var(--glass-border);
-          border-radius: 20px;
-          padding: 2rem;
-          max-width: 500px;
-          max-height: 70vh;
-          overflow-y: auto;
-          color: var(--text-primary);
-        ">
-          <h3 style="margin-bottom: 1rem; color: var(--primary-green);">🎧 Album Tracks</h3>
-          <pre style="
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            overflow-x: auto;
-          ">${JSON.stringify(data, null, 2)}</pre>
-          <button onclick="this.closest('div').parentElement.remove()" style="
-            background: var(--primary-green);
-            border: none;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 1rem;
-            font-weight: 600;
-          ">Close</button>
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-      
-      // Close on background click
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.remove();
-        }
-      });
     }
 
     function escapeHtml(text) {
@@ -759,20 +819,8 @@
       return div.innerHTML;
     }
 
-    // Add some nice interactions
-    document.addEventListener('DOMContentLoaded', function() {
-      // Add focus ring animations
-      const inputs = document.querySelectorAll('input, button');
-      inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          this.style.transform = 'scale(1.02)';
-        });
-        
-        input.addEventListener('blur', function() {
-          this.style.transform = 'scale(1)';
-        });
-      });
-    });
+    // Start the app
+    init();
   </script>
 </body>
 </html>
