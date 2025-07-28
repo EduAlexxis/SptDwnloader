@@ -2,82 +2,509 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spotify Downloader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Downloader Pro</title>
   <style>
-    body {
-      background-color: #121212;
-      color: #FFFFFF;
-      font-family: 'Helvetica Neue', sans-serif;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
-    header {
-      background-color: #1DB954;
-      padding: 20px;
-      text-align: center;
-      color: white;
-      font-size: 1.8em;
-      font-weight: bold;
+    :root {
+      --primary-green: #1DB954;
+      --dark-green: #1ed760;
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
+      --shadow-glow: 0 0 50px rgba(29, 185, 84, 0.3);
     }
 
-    .container {
-      padding: 30px;
-      max-width: 600px;
-      margin: auto;
+    body {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    input[type="text"] {
+    /* Animated background particles */
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 12px 15px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      outline: none;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
     }
 
-    button {
-      background-color: #1DB954;
+    .particle {
+      position: absolute;
+      background: radial-gradient(circle, var(--primary-green) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 20s infinite linear;
+      opacity: 0.1;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.1; }
+      90% { opacity: 0.1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Header with glassmorphism */
+    header {
+      background: rgba(29, 185, 84, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 2rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(29, 185, 84, 0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #1DB954, #1ed760, #3b82f6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      animation: logoGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoGlow {
+      from { filter: drop-shadow(0 0 10px rgba(29, 185, 84, 0.5)); }
+      to { filter: drop-shadow(0 0 20px rgba(29, 185, 84, 0.8)); }
+    }
+
+    .tagline {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.5s forwards;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Main container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      position: relative;
+    }
+
+    /* Search section */
+    .search-section {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      animation: slideInDown 0.8s ease-out;
+    }
+
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .search-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(29, 185, 84, 0.3);
+    }
+
+    .input-container {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus + .search-icon {
+      color: var(--primary-green);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 20px;
+      padding: 1.2rem 2.5rem;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      font-weight: bold;
-      margin-right: 10px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
     }
 
-    button:hover {
-      background-color: #17a84b;
+    .search-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.5s;
     }
 
-    .song {
-      background-color: #1e1e1e;
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 8px;
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);
     }
 
-    .song p {
-      margin: 0 0 10px 0;
-      font-size: 16px;
-      font-weight: bold;
+    .search-btn:hover::before {
+      left: 100%;
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Loading state */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+    }
+
+    .loading.active {
+      display: block;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--glass-border);
+      border-top: 3px solid var(--primary-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Results section */
+    .results {
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+    .results.visible {
+      opacity: 1;
+    }
+
+    .song-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      animation: slideInUp 0.6s ease-out forwards;
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    .song-card:nth-child(1) { animation-delay: 0.1s; }
+    .song-card:nth-child(2) { animation-delay: 0.2s; }
+    .song-card:nth-child(3) { animation-delay: 0.3s; }
+    .song-card:nth-child(4) { animation-delay: 0.4s; }
+    .song-card:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes slideInUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .song-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(29, 185, 84, 0.1), transparent);
+      transition: all 0.6s;
+    }
+
+    .song-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(29, 185, 84, 0.3);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(29, 185, 84, 0.2);
+    }
+
+    .song-card:hover::before {
+      left: 100%;
+    }
+
+    .song-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .song-avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-green), var(--accent-purple));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      animation: rotate 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(-5deg); }
+      to { transform: rotate(5deg); }
+    }
+
+    .song-details h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      color: var(--text-primary);
+    }
+
+    .song-details p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .song-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+      border-color: var(--primary-green);
+    }
+
+    .album-btn {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      border-color: var(--accent-purple);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .download-btn:hover {
+      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+    }
+
+    .album-btn:hover {
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
     }
 
     .no-results {
-      color: #bbb;
-      margin-top: 20px;
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-secondary);
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .no-results-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1rem;
+      }
+
+      .search-section {
+        padding: 2rem;
+      }
+
+      .song-actions {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        justify-content: center;
+      }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--primary-green), var(--accent-purple));
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(var(--dark-green), var(--accent-blue));
     }
   </style>
 </head>
 <body>
+  <!-- Animated background particles -->
+  <div class="bg-particles">
+    <div class="particle" style="width: 4px; height: 4px; left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="width: 6px; height: 6px; left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="width: 5px; height: 5px; left: 40%; animation-delay: 6s;"></div>
+    <div class="particle" style="width: 4px; height: 4px; left: 50%; animation-delay: 8s;"></div>
+    <div class="particle" style="width: 7px; height: 7px; left: 60%; animation-delay: 10s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 70%; animation-delay: 12s;"></div>
+    <div class="particle" style="width: 5px; height: 5px; left: 80%; animation-delay: 14s;"></div>
+    <div class="particle" style="width: 4px; height: 4px; left: 90%; animation-delay: 16s;"></div>
+  </div>
 
-  <header>🎵 Spotify Downloader</header>
+  <header>
+    <div class="header-content">
+      <h1 class="logo">🎵 Spotify Pro</h1>
+      <p class="tagline">Premium Music Downloader Experience</p>
+    </div>
+  </header>
 
   <div class="container">
-    <input type="text" id="songInput" placeholder="Search for a song...">
-    <button onclick="searchSong()">Search</button>
+    <div class="search-section">
+      <div class="input-container">
+        <input type="text" id="songInput" class="search-input" placeholder="Search for your favorite songs...">
+        <span class="search-icon">🔍</span>
+      </div>
+      <button class="search-btn" onclick="searchSong()">
+        <span>Search Now</span>
+      </button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Searching for amazing music...</p>
+    </div>
 
     <div id="results" class="results"></div>
   </div>
@@ -85,15 +512,29 @@
   <script>
     const backendUrl = "https://aca0423d6131.ngrok-free.app";
 
+    // Add enter key support
+    document.getElementById("songInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        searchSong();
+      }
+    });
+
     async function searchSong() {
       const song = document.getElementById("songInput").value.trim();
       const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "Searching...";
-
+      const loadingDiv = document.getElementById("loading");
+      
+      // Reset results
+      resultsDiv.innerHTML = "";
+      resultsDiv.classList.remove("visible");
+      
       if (!song) {
-        resultsDiv.innerHTML = "<p class='no-results'>Please enter a song name.</p>";
+        showNoResults("Please enter a song name to start searching 🎵");
         return;
       }
+
+      // Show loading
+      loadingDiv.classList.add("active");
 
       try {
         const res = await fetch(`${backendUrl}/search`, {
@@ -103,30 +544,82 @@
         });
 
         const songs = await res.json();
-        resultsDiv.innerHTML = "";
+        
+        // Hide loading
+        loadingDiv.classList.remove("active");
 
         if (!Array.isArray(songs) || songs.length === 0) {
-          resultsDiv.innerHTML = "<p class='no-results'>No songs found.</p>";
+          showNoResults("No songs found. Try a different search term 🤔");
           return;
         }
 
-        songs.forEach(song => {
-          const el = document.createElement("div");
-          el.classList.add("song");
-          el.innerHTML = `
-            <p>${song.name} <br><span style="font-weight:normal; color:#aaa;">by ${song.artist}</span></p>
-            <button onclick='downloadSong("${song.url}")'>⬇️ Download</button>
-            <button onclick='getAlbum("${song.url}")'>🎧 Album Tracks</button>
-          `;
-          resultsDiv.appendChild(el);
-        });
+        // Display results
+        displaySongs(songs);
+        
       } catch (err) {
-        resultsDiv.innerHTML = `<p class='no-results'>Error: ${err.message}</p>`;
+        loadingDiv.classList.remove("active");
+        showNoResults(`Connection error: ${err.message} 😔`);
       }
+    }
+
+    function displaySongs(songs) {
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      songs.forEach((song, index) => {
+        const songCard = document.createElement("div");
+        songCard.classList.add("song-card");
+        songCard.style.animationDelay = `${index * 0.1}s`;
+        
+        songCard.innerHTML = `
+          <div class="song-info">
+            <div class="song-avatar">🎵</div>
+            <div class="song-details">
+              <h3>${escapeHtml(song.name)}</h3>
+              <p>by ${escapeHtml(song.artist)}</p>
+            </div>
+          </div>
+          <div class="song-actions">
+            <button class="action-btn download-btn" onclick='downloadSong("${escapeHtml(song.url)}")'>
+              <span>⬇️</span>
+              <span>Download</span>
+            </button>
+            <button class="action-btn album-btn" onclick='getAlbum("${escapeHtml(song.url)}")'>
+              <span>🎧</span>
+              <span>Album Tracks</span>
+            </button>
+          </div>
+        `;
+        
+        resultsDiv.appendChild(songCard);
+      });
+
+      // Show results with animation
+      setTimeout(() => {
+        resultsDiv.classList.add("visible");
+      }, 100);
+    }
+
+    function showNoResults(message) {
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">🎭</div>
+          <h3>Oops!</h3>
+          <p>${message}</p>
+        </div>
+      `;
+      resultsDiv.classList.add("visible");
     }
 
     async function downloadSong(songUrl) {
       try {
+        // Add loading state to button
+        const downloadBtn = event.target.closest('.download-btn');
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = `<span>⏳</span><span>Downloading...</span>`;
+        downloadBtn.disabled = true;
+
         const res = await fetch(`${backendUrl}/download`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -134,18 +627,43 @@
         });
 
         const data = await res.json();
+        
+        // Restore button
+        downloadBtn.innerHTML = originalText;
+        downloadBtn.disabled = false;
+
         if (data.file_url) {
+          // Success animation
+          downloadBtn.innerHTML = `<span>✅</span><span>Downloaded!</span>`;
+          setTimeout(() => {
+            downloadBtn.innerHTML = originalText;
+          }, 2000);
+          
           window.location.href = backendUrl + data.file_url;
         } else {
-          alert("Download failed");
+          throw new Error("Download failed");
         }
       } catch (err) {
-        alert("Error: " + err.message);
+        // Restore button on error
+        const downloadBtn = event.target.closest('.download-btn');
+        downloadBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
+        downloadBtn.disabled = false;
+        
+        setTimeout(() => {
+          downloadBtn.innerHTML = `<span>⬇️</span><span>Download</span>`;
+        }, 2000);
+        
+        alert("Download failed: " + err.message);
       }
     }
 
     async function getAlbum(songUrl) {
       try {
+        const albumBtn = event.target.closest('.album-btn');
+        const originalText = albumBtn.innerHTML;
+        albumBtn.innerHTML = `<span>⏳</span><span>Loading...</span>`;
+        albumBtn.disabled = true;
+
         const res = await fetch(`${backendUrl}/album-tracks`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -153,12 +671,108 @@
         });
 
         const data = await res.json();
-        alert("Album Tracks:\n" + JSON.stringify(data, null, 2));
+        
+        // Restore button
+        albumBtn.innerHTML = originalText;
+        albumBtn.disabled = false;
+        
+        // Create a better modal for album tracks
+        showAlbumModal(data);
+        
       } catch (err) {
-        alert("Error: " + err.message);
+        const albumBtn = event.target.closest('.album-btn');
+        albumBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
+        albumBtn.disabled = false;
+        
+        setTimeout(() => {
+          albumBtn.innerHTML = `<span>🎧</span><span>Album Tracks</span>`;
+        }, 2000);
+        
+        alert("Error loading album: " + err.message);
       }
     }
-  </script>
 
+    function showAlbumModal(data) {
+      // Create a styled modal instead of alert
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          padding: 2rem;
+          max-width: 500px;
+          max-height: 70vh;
+          overflow-y: auto;
+          color: var(--text-primary);
+        ">
+          <h3 style="margin-bottom: 1rem; color: var(--primary-green);">🎧 Album Tracks</h3>
+          <pre style="
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            overflow-x: auto;
+          ">${JSON.stringify(data, null, 2)}</pre>
+          <button onclick="this.closest('div').parentElement.remove()" style="
+            background: var(--primary-green);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: 600;
+          ">Close</button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Close on background click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Add some nice interactions
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add focus ring animations
+      const inputs = document.querySelectorAll('input, button');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.style.transform = 'scale(1.02)';
+        });
+        
+        input.addEventListener('blur', function() {
+          this.style.transform = 'scale(1)';
+        });
+      });
+    });
+  </script>
 </body>
 </html>
