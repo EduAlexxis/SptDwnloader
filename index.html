@@ -191,6 +191,23 @@
       justify-content: center;
       font-size: 1.5rem;
       margin-right: 1rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .song-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .song-avatar .fallback-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
     }
 
     .song-details h3 {
@@ -233,6 +250,11 @@
     .album-btn {
       background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
       border-color: var(--accent-purple);
+    }
+
+    .download-album-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      border-color: #ff6b6b;
     }
 
     .action-btn:hover {
@@ -422,6 +444,137 @@
       opacity: 0.5;
     }
 
+    .album-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .album-modal.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .album-modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: var(--text-primary);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .album-modal.visible .album-modal-content {
+      transform: scale(1);
+    }
+
+    .album-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .album-header h3 {
+      color: var(--primary-green);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .album-tracks {
+      list-style: none;
+    }
+
+    .album-track {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .album-track:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(5px);
+    }
+
+    .track-info {
+      flex: 1;
+    }
+
+    .track-info h4 {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .track-info p {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+
+    .track-download {
+      background: var(--primary-green);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .track-download:hover {
+      background: var(--dark-green);
+      transform: scale(1.05);
+    }
+
+    .modal-close {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 1rem;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .modal-close:hover {
+      background: #dc2626;
+    }
+
+    .download-all-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      border: none;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
     /* Mobile responsive */
     @media (max-width: 768px) {
       .container {
@@ -513,17 +666,36 @@
     const backendUrl = "https://aca0423d6131.ngrok-free.app";
     let downloadQueue = [];
     let queueVisible = false;
+    let searchTimeout = null;
 
     // Simple initialization without complex DOM manipulation
     function init() {
       console.log('App starting...');
       
-      // Add enter key support
+      // Add enter key support and search-as-you-type
       const songInput = document.getElementById("songInput");
       if (songInput) {
         songInput.addEventListener("keypress", function(e) {
           if (e.key === "Enter") {
+            clearTimeout(searchTimeout);
             searchSong();
+          }
+        });
+
+        // Search as you type with debounce
+        songInput.addEventListener("input", function(e) {
+          clearTimeout(searchTimeout);
+          const query = e.target.value.trim();
+          
+          if (query.length >= 3) {
+            searchTimeout = setTimeout(() => {
+              searchSong();
+            }, 800); // Wait 800ms after user stops typing
+          } else if (query.length === 0) {
+            // Clear results when input is empty
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+            resultsDiv.classList.remove("visible");
           }
         });
       }
@@ -680,12 +852,21 @@
         const songCard = document.createElement("div");
         songCard.classList.add("song-card");
         
+        // Handle image with fallback
+        const imageHtml = song.image ? 
+          `<img src="${escapeHtml(song.image)}" alt="${escapeHtml(song.name)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+           <div class="fallback-icon" style="display:none;">🎵</div>` :
+          `<div class="fallback-icon">🎵</div>`;
+        
         songCard.innerHTML = `
           <div class="song-info">
-            <div class="song-avatar">🎵</div>
+            <div class="song-avatar">
+              ${imageHtml}
+            </div>
             <div class="song-details">
               <h3>${escapeHtml(song.name)}</h3>
               <p>by ${escapeHtml(song.artist)}</p>
+              ${song.album ? `<p style="font-size: 0.8em; color: var(--text-secondary); margin-top: 0.2rem;">Album: ${escapeHtml(song.album)}</p>` : ''}
             </div>
           </div>
           <div class="song-actions">
@@ -697,6 +878,12 @@
               <span>🎧</span>
               <span>Album Tracks</span>
             </button>
+            ${song.album_url ? `
+              <button class="action-btn download-album-btn" onclick='downloadAlbum("${escapeHtml(song.album_url)}", "${escapeHtml(song.album || 'Album')}")'>
+                <span>📀</span>
+                <span>Download Album</span>
+              </button>
+            ` : ''}
           </div>
         `;
         
@@ -829,7 +1016,7 @@
           albumBtn.innerHTML = originalText;
           albumBtn.disabled = false;
           
-          alert("Album Tracks:\n" + JSON.stringify(data, null, 2));
+          showAlbumModal(data);
         }
       } catch (err) {
         const albumBtn = event.target.closest('.album-btn');
@@ -843,6 +1030,177 @@
         }
         
         alert("Error loading album: " + err.message);
+      }
+    }
+
+    function showAlbumModal(albumData) {
+      // Create modal
+      const modal = document.createElement('div');
+      modal.classList.add('album-modal');
+      modal.id = 'albumModal';
+      
+      // Handle both array of tracks and object with tracks property
+      const tracks = Array.isArray(albumData) ? albumData : (albumData.tracks || []);
+      const albumTitle = albumData.album_name || albumData.name || 'Album Tracks';
+      
+      const tracksHtml = tracks.map((track, index) => `
+        <li class="album-track">
+          <div class="track-info">
+            <h4>${escapeHtml(track.name || track.title || `Track ${index + 1}`)}</h4>
+            <p>${escapeHtml(track.artist || track.duration || '')}</p>
+          </div>
+          <button class="track-download" onclick='downloadTrack("${escapeHtml(track.url || track.download_url || '')}", "${escapeHtml(track.name || track.title || `Track ${index + 1}`)}", "${escapeHtml(track.artist || 'Unknown Artist')}")'>
+            ⬇️
+          </button>
+        </li>
+      `).join('');
+      
+      modal.innerHTML = `
+        <div class="album-modal-content">
+          <div class="album-header">
+            <h3>🎧 ${escapeHtml(albumTitle)}</h3>
+            <p>${tracks.length} tracks</p>
+          </div>
+          
+          ${tracks.length > 1 ? `
+            <button class="download-all-btn" onclick="downloadAllTracks()">
+              📀 Download All Tracks
+            </button>
+          ` : ''}
+          
+          <ul class="album-tracks">
+            ${tracksHtml}
+          </ul>
+          
+          <button class="modal-close" onclick="closeAlbumModal()">Close</button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Show modal with animation
+      setTimeout(() => {
+        modal.classList.add('visible');
+      }, 10);
+      
+      // Close on background click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeAlbumModal();
+        }
+      });
+    }
+
+    function closeAlbumModal() {
+      const modal = document.getElementById('albumModal');
+      if (modal) {
+        modal.classList.remove('visible');
+        setTimeout(() => {
+          modal.remove();
+        }, 300);
+      }
+    }
+
+    async function downloadTrack(trackUrl, trackName, artistName) {
+      if (!trackUrl) {
+        alert('Track URL not available');
+        return;
+      }
+      
+      // Use existing download function
+      await downloadSong(trackUrl, trackName, artistName);
+    }
+
+    async function downloadAllTracks() {
+      const modal = document.getElementById('albumModal');
+      const trackButtons = modal.querySelectorAll('.track-download');
+      
+      const downloadAllBtn = modal.querySelector('.download-all-btn');
+      if (downloadAllBtn) {
+        downloadAllBtn.innerHTML = '⏳ Starting Downloads...';
+        downloadAllBtn.disabled = true;
+      }
+      
+      // Download tracks with small delays to avoid overwhelming the server
+      for (let i = 0; i < trackButtons.length; i++) {
+        const button = trackButtons[i];
+        try {
+          button.click();
+          // Small delay between downloads
+          if (i < trackButtons.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (error) {
+          console.warn(`Failed to download track ${i + 1}:`, error);
+        }
+      }
+      
+      if (downloadAllBtn) {
+        downloadAllBtn.innerHTML = '✅ All Downloads Started!';
+        setTimeout(() => {
+          downloadAllBtn.innerHTML = '📀 Download All Tracks';
+          downloadAllBtn.disabled = false;
+        }, 3000);
+      }
+    }
+
+    async function downloadAlbum(albumUrl, albumName) {
+      try {
+        const albumBtn = event.target.closest('.download-album-btn');
+        if (albumBtn) {
+          const originalText = albumBtn.innerHTML;
+          albumBtn.innerHTML = `<span>⏳</span><span>Getting Album...</span>`;
+          albumBtn.disabled = true;
+
+          // First get album tracks
+          const res = await fetch(`${backendUrl}/album-tracks`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true"
+            },
+            body: JSON.stringify({ url: albumUrl })
+          });
+
+          const albumData = await res.json();
+          const tracks = Array.isArray(albumData) ? albumData : (albumData.tracks || []);
+          
+          albumBtn.innerHTML = `<span>📥</span><span>Downloading ${tracks.length} tracks...</span>`;
+          
+          // Add all tracks to queue
+          for (let i = 0; i < tracks.length; i++) {
+            const track = tracks[i];
+            const trackName = track.name || track.title || `Track ${i + 1}`;
+            const artistName = track.artist || 'Unknown Artist';
+            const trackUrl = track.url || track.download_url;
+            
+            if (trackUrl) {
+              // Small delay between each download
+              setTimeout(() => {
+                downloadSong(trackUrl, trackName, artistName);
+              }, i * 1500); // 1.5 second delay between each
+            }
+          }
+          
+          albumBtn.innerHTML = `<span>✅</span><span>Album Added to Queue!</span>`;
+          setTimeout(() => {
+            albumBtn.innerHTML = originalText;
+            albumBtn.disabled = false;
+          }, 3000);
+          
+        }
+      } catch (err) {
+        const albumBtn = event.target.closest('.download-album-btn');
+        if (albumBtn) {
+          albumBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
+          albumBtn.disabled = false;
+          
+          setTimeout(() => {
+            albumBtn.innerHTML = `<span>📀</span><span>Download Album</span>`;
+          }, 2000);
+        }
+        
+        alert("Error downloading album: " + err.message);
       }
     }
 
