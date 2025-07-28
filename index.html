@@ -756,14 +756,47 @@
         if (data.file_url) {
           updateQueueItem(queueId, 'completed');
           
-          // Create download link
-          const downloadLink = document.createElement('a');
-          downloadLink.href = backendUrl + data.file_url;
-          downloadLink.download = `${songName} - ${artist}.mp3`;
-          downloadLink.style.display = 'none';
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
+          // Force download by fetching the file as blob
+          try {
+            const fileResponse = await fetch(backendUrl + data.file_url, {
+              headers: {
+                "ngrok-skip-browser-warning": "true"
+              }
+            });
+            
+            if (fileResponse.ok) {
+              const blob = await fileResponse.blob();
+              const downloadUrl = window.URL.createObjectURL(blob);
+              
+              const downloadLink = document.createElement('a');
+              downloadLink.href = downloadUrl;
+              downloadLink.download = `${songName} - ${artist}.mp3`;
+              downloadLink.style.display = 'none';
+              
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              document.body.removeChild(downloadLink);
+              
+              // Clean up the blob URL
+              setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 1000);
+            } else {
+              // Fallback to direct link with download parameter
+              window.open(backendUrl + data.file_url + '?download=true&filename=' + encodeURIComponent(`${songName} - ${artist}.mp3`), '_blank');
+            }
+          } catch (blobError) {
+            console.warn('Blob download failed, using fallback:', blobError);
+            // Ultimate fallback
+            const downloadLink = document.createElement('a');
+            downloadLink.href = backendUrl + data.file_url;
+            downloadLink.download = `${songName} - ${artist}.mp3`;
+            downloadLink.setAttribute('target', '_blank');
+            downloadLink.setAttribute('rel', 'noopener noreferrer');
+            downloadLink.style.display = 'none';
+            
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+          }
           
         } else {
           throw new Error("Download failed - no file URL received");
