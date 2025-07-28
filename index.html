@@ -135,7 +135,7 @@
 
         const data = await res.json();
         if (data.file_url) {
-          window.location.href = data.file_url;
+          window.location.href = backendUrl + data.file_url;
         } else {
           alert("Download failed");
         }
