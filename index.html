@@ -1,630 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spotify Downloader Pro</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary-green: #1DB954;
-      --dark-green: #1ed760;
-      --bg-primary: #0d1117;
-      --bg-secondary: #161b22;
-      --glass-bg: rgba(255, 255, 255, 0.05);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --text-primary: #f0f6fc;
-      --text-secondary: #8b949e;
-      --accent-purple: #8b5cf6;
-      --accent-blue: #3b82f6;
-    }
-
-    body {
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
-      color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      min-height: 100vh;
-    }
-
-    /* Header */
-    header {
-      background: rgba(29, 185, 84, 0.1);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 2rem 0;
-      text-align: center;
-    }
-
-    .logo {
-      font-size: 3rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #1DB954, #1ed760, #3b82f6);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    .tagline {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      font-weight: 300;
-    }
-
-    /* Main container */
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 3rem 2rem;
-    }
-
-    /* Search section */
-    .search-section {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 2.5rem;
-      margin-bottom: 3rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    .input-container {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 1.2rem 1.5rem 1.2rem 3.5rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid transparent;
-      border-radius: 16px;
-      color: var(--text-primary);
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary-green);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 1.2rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-    }
-
-    .search-btn {
-      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-      color: white;
-      border: none;
-      padding: 1.2rem 2.5rem;
-      border-radius: 16px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .search-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);
-    }
-
-    /* Loading */
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-secondary);
-    }
-
-    .loading.active {
-      display: block;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--glass-border);
-      border-top: 3px solid var(--primary-green);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Results */
-    .results {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-
-    .results.visible {
-      opacity: 1;
-    }
-
-    .song-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 1.8rem;
-      margin-bottom: 1.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .song-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(29, 185, 84, 0.3);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .song-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .song-avatar {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary-green), var(--accent-purple));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-right: 1rem;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .song-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-
-    .song-avatar .fallback-icon {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.5rem;
-    }
-
-    .song-details h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-      color: var(--text-primary);
-    }
-
-    .song-details p {
-      color: var(--text-secondary);
-      font-size: 1rem;
-    }
-
-    .song-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      color: var(--text-primary);
-      padding: 0.8rem 1.5rem;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .download-btn {
-      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-      border-color: var(--primary-green);
-    }
-
-    .album-btn {
-      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-      border-color: var(--accent-purple);
-    }
-
-    .download-album-btn {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-      border-color: #ff6b6b;
-    }
-
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .action-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Queue Styles */
-    .download-queue {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 350px;
-      max-height: 70vh;
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      transform: translateX(400px);
-      transition: all 0.3s ease;
-      z-index: 1000;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .download-queue.visible {
-      transform: translateX(0);
-    }
-
-    .queue-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--glass-border);
-    }
-
-    .queue-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .queue-close {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 1.5rem;
-      padding: 0.5rem;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .queue-close:hover {
-      color: var(--text-primary);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .queue-items {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .queue-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .queue-item.completed {
-      border-color: rgba(29, 185, 84, 0.3);
-      background: rgba(29, 185, 84, 0.1);
-    }
-
-    .queue-item.failed {
-      border-color: rgba(239, 68, 68, 0.3);
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .queue-item-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.8rem;
-    }
-
-    .queue-song-info h4 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.2rem;
-    }
-
-    .queue-song-info p {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
-    .queue-status {
-      font-size: 1.2rem;
-    }
-
-    .queue-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-      color: white;
-      border: none;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
-      transition: all 0.3s ease;
-      z-index: 1001;
-    }
-
-    .queue-toggle:hover {
-      transform: scale(1.1);
-    }
-
-    .queue-badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: #ef4444;
-      color: white;
-      font-size: 0.8rem;
-      font-weight: 700;
-      min-width: 20px;
-      height: 20px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: scale(0);
-      transition: all 0.3s ease;
-    }
-
-    .queue-badge.visible {
-      transform: scale(1);
-    }
-
-    .empty-queue {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--text-secondary);
-    }
-
-    .empty-queue-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    .no-results {
-      text-align: center;
-      padding: 3rem 2rem;
-      color: var(--text-secondary);
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-    }
-
-    .no-results-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    .album-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .album-modal.visible {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .album-modal-content {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 2rem;
-      max-width: 600px;
-      max-height: 80vh;
-      overflow-y: auto;
-      color: var(--text-primary);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-
-    .album-modal.visible .album-modal-content {
-      transform: scale(1);
-    }
-
-    .album-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--glass-border);
-    }
-
-    .album-header h3 {
-      color: var(--primary-green);
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .album-tracks {
-      list-style: none;
-    }
-
-    .album-track {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.8rem;
-      margin-bottom: 0.5rem;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      transition: all 0.3s ease;
-    }
-
-    .album-track:hover {
-      background: rgba(255, 255, 255, 0.08);
-      transform: translateX(5px);
-    }
-
-    .track-info {
-      flex: 1;
-    }
-
-    .track-info h4 {
-      font-size: 1rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .track-info p {
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-    }
-
-    .track-download {
-      background: var(--primary-green);
-      border: none;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .track-download:hover {
-      background: var(--dark-green);
-      transform: scale(1.05);
-    }
-
-    .modal-close {
-      background: #ef4444;
-      border: none;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-top: 1rem;
-      font-weight: 600;
-      width: 100%;
-    }
-
-    .modal-close:hover {
-      background: #dc2626;
-    }
-
-    .download-all-btn {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-      border: none;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-bottom: 1rem;
-      font-weight: 600;
-      width: 100%;
-      transition: all 0.3s ease;
-    }
-
-    /* Mobile responsive */
-    @media (max-width: 768px) {
-      .container {
-        padding: 2rem 1rem;
-      }
-
-      .search-section {
-        padding: 2rem;
-      }
-
-      .song-actions {
-        flex-direction: column;
-      }
-
-      .action-btn {
-        justify-content: center;
-      }
-
-      .download-queue {
-        width: calc(100vw - 40px);
-        right: 20px;
-        left: 20px;
-        transform: translateY(100vh);
-      }
-
-      .download-queue.visible {
-        transform: translateY(0);
-      }
-
-      .queue-toggle {
-        bottom: 20px;
-        top: auto;
-      }
+    /* ====== THEME / RESET ====== */
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --primary-green:#1DB954;--dark-green:#1ed760;--bg-primary:#0d1117;--bg-secondary:#161b22;
+      --glass-bg:rgba(255,255,255,.05);--glass-border:rgba(255,255,255,.1);
+      --text-primary:#f0f6fc;--text-secondary:#8b949e;--accent-purple:#8b5cf6;--accent-blue:#3b82f6
+    }
+    body{background:linear-gradient(135deg,#0d1117 0%,#161b22 50%,#21262d 100%);color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;min-height:100vh}
+    header{background:rgba(29,185,84,.1);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);padding:2rem 0;text-align:center}
+    .logo{font-size:3rem;font-weight:800;background:linear-gradient(135deg,#1DB954,#1ed760,#3b82f6);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+    .tagline{color:var(--text-secondary);font-size:1.1rem;font-weight:300}
+    .container{max-width:800px;margin:0 auto;padding:3rem 2rem}
+    .search-section{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:24px;padding:2.5rem;margin-bottom:3rem;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .input-container{position:relative;margin-bottom:1.5rem}
+    .search-input{width:100%;padding:1.2rem 1.5rem 1.2rem 3.5rem;background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:16px;color:var(--text-primary);font-size:1.1rem;transition:all .3s ease}
+    .search-input:focus{outline:none;border-color:var(--primary-green);background:rgba(255,255,255,.08)}
+    .search-icon{position:absolute;left:1.2rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:1.2rem}
+    .search-btn{background:linear-gradient(135deg,var(--primary-green),var(--dark-green));color:#fff;border:none;padding:1.2rem 2.5rem;border-radius:16px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all .3s ease}
+    .search-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(29,185,84,.4)}
+    .loading{display:none;text-align:center;padding:2rem;color:var(--text-secondary)}
+    .loading.active{display:block}
+    .spinner{width:40px;height:40px;border:3px solid var(--glass-border);border-top:3px solid var(--primary-green);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .results{opacity:0;transition:opacity .5s ease}
+    .results.visible{opacity:1}
+    .song-card{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:20px;padding:1.8rem;margin-bottom:1.5rem;transition:all .3s ease}
+    .song-card:hover{transform:translateY(-5px);border-color:rgba(29,185,84,.3);box-shadow:0 15px 30px rgba(0,0,0,.3)}
+    .song-info{display:flex;align-items:center;margin-bottom:1.5rem}
+    .song-avatar{width:60px;height:60px;background:linear-gradient(135deg,var(--primary-green),var(--accent-purple));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-right:1rem;overflow:hidden;position:relative}
+    .song-avatar img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+    .song-details h3{font-size:1.3rem;font-weight:700;margin-bottom:.3rem;color:var(--text-primary)}
+    .song-details p{color:var(--text-secondary);font-size:1rem}
+    .song-actions{display:flex;gap:1rem;flex-wrap:wrap}
+    .action-btn{background:rgba(255,255,255,.05);border:1px solid var(--glass-border);color:var(--text-primary);padding:.8rem 1.5rem;border-radius:12px;cursor:pointer;font-weight:500;transition:all .3s ease;display:flex;align-items:center;gap:.5rem}
+    .download-btn{background:linear-gradient(135deg,var(--primary-green),var(--dark-green));border-color:var(--primary-green)}
+    .action-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+    .action-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .download-queue{position:fixed;top:20px;right:20px;width:350px;max-height:70vh;background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:20px;padding:1.5rem;transform:translateX(400px);transition:all .3s ease;z-index:1000;box-shadow:0 20px 40px rgba(0,0,0,.3)}
+    .download-queue.visible{transform:translateX(0)}
+    .queue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--glass-border)}
+    .queue-title{font-size:1.2rem;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:.5rem}
+    .queue-close{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.5rem;padding:.5rem;border-radius:8px;transition:all .3s ease}
+    .queue-close:hover{color:var(--text-primary);background:rgba(255,255,255,.1)}
+    .queue-items{max-height:400px;overflow-y:auto}
+    .queue-item{background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:12px;padding:1rem;margin-bottom:.8rem}
+    .queue-item.completed{border-color:rgba(29,185,84,.3);background:rgba(29,185,84,.1)}
+    .queue-item.failed{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.1)}
+    .queue-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+    .queue-song-info h4{font-size:.9rem;font-weight:600;color:var(--text-primary);margin-bottom:.2rem}
+    .queue-song-info p{font-size:.8rem;color:var(--text-secondary)}
+    .queue-status{font-size:1.2rem}
+    .queue-toggle{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,var(--primary-green),var(--dark-green));color:#fff;border:none;width:60px;height:60px;border-radius:50%;cursor:pointer;font-size:1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(29,185,84,.3);transition:all .3s ease;z-index:1001}
+    .queue-toggle:hover{transform:scale(1.1)}
+    .queue-badge{position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:.8rem;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;transform:scale(0);transition:all .3s ease}
+    .queue-badge.visible{transform:scale(1)}
+    .empty-queue{text-align:center;padding:2rem 1rem;color:var(--text-secondary)}
+    .empty-queue-icon{font-size:2.5rem;margin-bottom:1rem;opacity:.5}
+    .no-results{text-align:center;padding:3rem 2rem;color:var(--text-secondary);background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:20px}
+    .no-results-icon{font-size:3rem;margin-bottom:1rem;opacity:.5}
+    @media (max-width:768px){
+      .container{padding:2rem 1rem}
+      .search-section{padding:2rem}
+      .song-actions{flex-direction:column}
+      .action-btn{justify-content:center}
+      .download-queue{width:calc(100vw - 40px);right:20px;left:20px;transform:translateY(100vh)}
+      .download-queue.visible{transform:translateY(0)}
+      .queue-toggle{bottom:20px;top:auto}
     }
   </style>
 </head>
 <body>
-  <!-- Download Queue Toggle Button -->
-  <button class="queue-toggle" onclick="toggleQueue()" id="queueToggle">
-    📥
+  <!-- Download Queue Toggle -->
+  <button class="queue-toggle" onclick="toggleQueue()" id="queueToggle">📥
     <span class="queue-badge" id="queueBadge">0</span>
   </button>
 
   <!-- Download Queue Panel -->
   <div class="download-queue" id="downloadQueue">
     <div class="queue-header">
-      <div class="queue-title">
-        <span>📥</span>
-        <span>Download Queue</span>
-      </div>
+      <div class="queue-title"><span>📥</span><span>Download Queue</span></div>
       <button class="queue-close" onclick="toggleQueue()">×</button>
     </div>
     <div class="queue-items" id="queueItems">
@@ -646,12 +106,10 @@
   <div class="container">
     <div class="search-section">
       <div class="input-container">
-        <input type="text" id="songInput" class="search-input" placeholder="Search for your favorite songs...">
+        <input id="songInput" class="search-input" placeholder="Search for your favorite songs..." />
         <span class="search-icon">🔍</span>
       </div>
-      <button class="search-btn" onclick="searchSong()">
-        <span>Search Now</span>
-      </button>
+      <button class="search-btn" onclick="searchSong()"><span>Search Now</span></button>
     </div>
 
     <div class="loading" id="loading">
@@ -663,555 +121,224 @@
   </div>
 
   <script>
-    const backendUrl = "https://server-silent-dawn-7977.fly.dev/";
+    // POINT THIS TO YOUR LIVE BACKEND
+    const backendUrl = "https://server-muddy-dream-414.fly.dev";
+
     let downloadQueue = [];
     let queueVisible = false;
     let searchTimeout = null;
 
-    // Simple initialization without complex DOM manipulation
-    function init() {
-      console.log('App starting...');
-      
-      // Add enter key support and search-as-you-type
-      const songInput = document.getElementById("songInput");
-      if (songInput) {
-        songInput.addEventListener("keypress", function(e) {
-          if (e.key === "Enter") {
-            clearTimeout(searchTimeout);
-            searchSong();
-          }
-        });
-
-        // Search as you type with debounce
-        songInput.addEventListener("input", function(e) {
-          clearTimeout(searchTimeout);
-          const query = e.target.value.trim();
-          
-          if (query.length >= 3) {
-            searchTimeout = setTimeout(() => {
-              searchSong();
-            }, 800); // Wait 800ms after user stops typing
-          } else if (query.length === 0) {
-            // Clear results when input is empty
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "";
-            resultsDiv.classList.remove("visible");
-          }
-        });
-      }
+    // ---------- Helpers ----------
+    function escapeHtml(s = "") {
+      return s.replace(/[&<>"']/g, c => (
+        { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]
+      ));
     }
 
     function toggleQueue() {
-      const queue = document.getElementById('downloadQueue');
+      const panel = document.getElementById("downloadQueue");
       queueVisible = !queueVisible;
-      
-      if (queueVisible) {
-        queue.classList.add('visible');
-      } else {
-        queue.classList.remove('visible');
-      }
+      panel.classList.toggle("visible", queueVisible);
     }
 
     function updateQueueBadge() {
-      const badge = document.getElementById('queueBadge');
-      const activeDownloads = downloadQueue.filter(item => 
-        item.status === 'downloading' || item.status === 'pending'
-      ).length;
-      
-      badge.textContent = activeDownloads;
-      
-      if (activeDownloads > 0) {
-        badge.classList.add('visible');
-      } else {
-        badge.classList.remove('visible');
-      }
+      const badge = document.getElementById("queueBadge");
+      const active = downloadQueue.filter(i => i.status === "downloading" || i.status === "pending").length;
+      badge.textContent = active;
+      badge.classList.toggle("visible", active > 0);
     }
 
     function addToQueue(songName, artist, url) {
-      const queueItem = {
-        id: Date.now() + Math.random(),
-        songName,
-        artist,
-        url,
-        status: 'pending'
-      };
-      
-      downloadQueue.push(queueItem);
+      const item = { id: Date.now() + Math.random(), songName, artist, url, status: "pending" };
+      downloadQueue.unshift(item);
       updateQueueDisplay();
       updateQueueBadge();
-      
-      return queueItem.id;
+      return item.id;
     }
 
-    function updateQueueItem(id, status) {
-      const item = downloadQueue.find(item => item.id === id);
-      if (item) {
-        item.status = status;
-        updateQueueDisplay();
-        updateQueueBadge();
-      }
+    function setQueueStatus(id, status) {
+      const it = downloadQueue.find(x => x.id === id);
+      if (it) { it.status = status; updateQueueDisplay(); updateQueueBadge(); }
     }
 
     function updateQueueDisplay() {
-      const queueItems = document.getElementById('queueItems');
-      
-      if (downloadQueue.length === 0) {
-        queueItems.innerHTML = `
+      const box = document.getElementById("queueItems");
+      if (!downloadQueue.length) {
+        box.innerHTML = `
           <div class="empty-queue">
             <div class="empty-queue-icon">🎵</div>
             <p>No downloads yet</p>
             <small>Downloaded songs will appear here</small>
-          </div>
-        `;
+          </div>`;
         return;
       }
-      
-      queueItems.innerHTML = downloadQueue.map(item => {
-        let statusIcon = '⏳';
-        let statusClass = '';
-        
-        switch (item.status) {
-          case 'downloading':
-            statusIcon = '⬇️';
-            break;
-          case 'completed':
-            statusIcon = '✅';
-            statusClass = 'completed';
-            break;
-          case 'failed':
-            statusIcon = '❌';
-            statusClass = 'failed';
-            break;
-        }
-        
+      box.innerHTML = downloadQueue.map(item => {
+        const cls = item.status === "completed" ? "completed" : item.status === "failed" ? "failed" : "";
+        const icon = item.status === "completed" ? "✅" : item.status === "failed" ? "❌" : item.status === "downloading" ? "⬇️" : "⏳";
         return `
-          <div class="queue-item ${statusClass}">
+          <div class="queue-item ${cls}">
             <div class="queue-item-header">
               <div class="queue-song-info">
                 <h4>${escapeHtml(item.songName)}</h4>
                 <p>by ${escapeHtml(item.artist)}</p>
               </div>
-              <div class="queue-status">${statusIcon}</div>
+              <div class="queue-status">${icon}</div>
             </div>
-          </div>
-        `;
-      }).join('');
+          </div>`;
+      }).join("");
     }
 
-    async function searchSong() {
-      const song = document.getElementById("songInput").value.trim();
-      const resultsDiv = document.getElementById("results");
-      const loadingDiv = document.getElementById("loading");
-      
-      resultsDiv.innerHTML = "";
-      resultsDiv.classList.remove("visible");
-      
-      if (!song) {
-        showNoResults("Please enter a song name to start searching 🎵");
-        return;
-      }
-
-      loadingDiv.classList.add("active");
-
-      try {
-        const res = await fetch(`${backendUrl}/search`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true"
-          },
-          body: JSON.stringify({ query: song })
-        });
-
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
-        }
-
-        const songs = await res.json();
-        
-        loadingDiv.classList.remove("active");
-
-        if (!Array.isArray(songs) || songs.length === 0) {
-          showNoResults("No songs found. Try a different search term 🤔");
-          return;
-        }
-
-        displaySongs(songs);
-        
-      } catch (err) {
-        loadingDiv.classList.remove("active");
-        showNoResults(`Connection error: ${err.message} 😔`);
-      }
+    function filenameFromDisposition(h) {
+      // Try RFC5987 or basic filename=
+      if (!h) return null;
+      const utf = /filename\*\=([^']*)''([^;]+)/i.exec(h);
+      if (utf && utf[2]) return decodeURIComponent(utf[2]);
+      const basic = /filename\=\"?([^\";]+)\"?/i.exec(h);
+      return basic ? basic[1] : null;
     }
 
-    function displaySongs(songs) {
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
+    function normalizeSong(item) {
+      // Accept multiple shapes from backend
+      const title = item.title || item.name || item.track || "Unknown Title";
+      const artist = item.artist || item.artists || item.author || "Unknown Artist";
+      const artwork = item.artwork || item.artwork_url || item.thumbnail || item.image || null;
+      const url = item.url || item.spotify_url || item.permalink || item.link || null; // ideally a Spotify track URL or a good search string
+      const album = item.album || "";
+      return { title, artist, artwork, url, album, raw: item };
+    }
 
-      songs.forEach((song) => {
-        const songCard = document.createElement("div");
-        songCard.classList.add("song-card");
-        
-        // Handle image with fallback
-        const imageHtml = song.image ? 
-          `<img src="${escapeHtml(song.image)}" alt="${escapeHtml(song.name)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-           <div class="fallback-icon" style="display:none;">🎵</div>` :
-          `<div class="fallback-icon">🎵</div>`;
-        
-        songCard.innerHTML = `
+    function cardHtml(song) {
+      return `
+        <div class="song-card">
           <div class="song-info">
             <div class="song-avatar">
-              ${imageHtml}
+              ${song.artwork ? `<img src="${escapeHtml(song.artwork)}" alt="artwork" />` : "🎵"}
             </div>
             <div class="song-details">
-              <h3>${escapeHtml(song.name)}</h3>
-              <p>by ${escapeHtml(song.artist)}</p>
-              ${song.album ? `<p style="font-size: 0.8em; color: var(--text-secondary); margin-top: 0.2rem;">Album: ${escapeHtml(song.album)}</p>` : ''}
+              <h3>${escapeHtml(song.title)}</h3>
+              <p>${escapeHtml(song.artist)}</p>
             </div>
           </div>
           <div class="song-actions">
-            <button class="action-btn download-btn" onclick='downloadSong("${escapeHtml(song.url)}", "${escapeHtml(song.name)}", "${escapeHtml(song.artist)}")'>
-              <span>⬇️</span>
-              <span>Download</span>
+            <button class="action-btn download-btn" onclick='downloadSong(${JSON.stringify(song).replace(/'/g,"&#39;")})'>
+              ⬇️ Download
             </button>
-            <button class="action-btn album-btn" onclick='getAlbum("${escapeHtml(song.url)}")'>
-              <span>🎧</span>
-              <span>Album Tracks</span>
-            </button>
-            ${song.album_url ? `
-              <button class="action-btn download-album-btn" onclick='downloadAlbum("${escapeHtml(song.album_url)}", "${escapeHtml(song.album || 'Album')}")'>
-                <span>📀</span>
-                <span>Download Album</span>
-              </button>
-            ` : ''}
+            ${song.url ? `<button class="action-btn" onclick="navigator.clipboard.writeText('${escapeHtml(song.url)}')">🔗 Copy Link</button>` : ""}
           </div>
-        `;
-        
-        resultsDiv.appendChild(songCard);
-      });
-
-      setTimeout(() => {
-        resultsDiv.classList.add("visible");
-      }, 100);
+        </div>
+      `;
     }
 
-    function showNoResults(message) {
+    // ---------- Search ----------
+    async function searchSong() {
+      const q = document.getElementById("songInput").value.trim();
+      const loading = document.getElementById("loading");
       const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = `
-        <div class="no-results">
-          <div class="no-results-icon">🎭</div>
-          <h3>Oops!</h3>
-          <p>${message}</p>
-        </div>
-      `;
-      resultsDiv.classList.add("visible");
-    }
 
-    async function downloadSong(songUrl, songName, artist) {
-      const queueId = addToQueue(songName, artist, songUrl);
-      
-      if (!queueVisible) {
-        setTimeout(() => toggleQueue(), 500);
-      }
-      
-      try {
-        const downloadBtn = event.target.closest('.download-btn');
-        if (downloadBtn) {
-          const originalText = downloadBtn.innerHTML;
-          downloadBtn.innerHTML = `<span>📥</span><span>Added to Queue</span>`;
-          downloadBtn.disabled = true;
-          
-          setTimeout(() => {
-            downloadBtn.innerHTML = originalText;
-            downloadBtn.disabled = false;
-          }, 2000);
-        }
+      resultsDiv.innerHTML = "";
+      resultsDiv.classList.remove("visible");
 
-        updateQueueItem(queueId, 'downloading');
-
-        const res = await fetch(`${backendUrl}/download`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true"
-          },
-          body: JSON.stringify({ url: songUrl })
-        });
-
-        const data = await res.json();
-        
-        if (data.file_url) {
-          updateQueueItem(queueId, 'completed');
-          
-          // Force download by fetching the file as blob
-          try {
-            const fileResponse = await fetch(backendUrl + data.file_url, {
-              headers: {
-                "ngrok-skip-browser-warning": "true"
-              }
-            });
-            
-            if (fileResponse.ok) {
-              const blob = await fileResponse.blob();
-              const downloadUrl = window.URL.createObjectURL(blob);
-              
-              const downloadLink = document.createElement('a');
-              downloadLink.href = downloadUrl;
-              downloadLink.download = `${songName} - ${artist}.mp3`;
-              downloadLink.style.display = 'none';
-              
-              document.body.appendChild(downloadLink);
-              downloadLink.click();
-              document.body.removeChild(downloadLink);
-              
-              // Clean up the blob URL
-              setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 1000);
-            } else {
-              // Fallback to direct link with download parameter
-              window.open(backendUrl + data.file_url + '?download=true&filename=' + encodeURIComponent(`${songName} - ${artist}.mp3`), '_blank');
-            }
-          } catch (blobError) {
-            console.warn('Blob download failed, using fallback:', blobError);
-            // Ultimate fallback
-            const downloadLink = document.createElement('a');
-            downloadLink.href = backendUrl + data.file_url;
-            downloadLink.download = `${songName} - ${artist}.mp3`;
-            downloadLink.setAttribute('target', '_blank');
-            downloadLink.setAttribute('rel', 'noopener noreferrer');
-            downloadLink.style.display = 'none';
-            
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-          }
-          
-        } else {
-          throw new Error("Download failed - no file URL received");
-        }
-      } catch (err) {
-        updateQueueItem(queueId, 'failed');
-        alert("Download failed: " + err.message);
-      }
-    }
-
-    async function getAlbum(songUrl) {
-      try {
-        const albumBtn = event.target.closest('.album-btn');
-        if (albumBtn) {
-          const originalText = albumBtn.innerHTML;
-          albumBtn.innerHTML = `<span>⏳</span><span>Loading...</span>`;
-          albumBtn.disabled = true;
-
-          const res = await fetch(`${backendUrl}/album-tracks`, {
-            method: "POST",
-            headers: { 
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true"
-            },
-            body: JSON.stringify({ url: songUrl })
-          });
-
-          const data = await res.json();
-          
-          albumBtn.innerHTML = originalText;
-          albumBtn.disabled = false;
-          
-          showAlbumModal(data);
-        }
-      } catch (err) {
-        const albumBtn = event.target.closest('.album-btn');
-        if (albumBtn) {
-          albumBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
-          albumBtn.disabled = false;
-          
-          setTimeout(() => {
-            albumBtn.innerHTML = `<span>🎧</span><span>Album Tracks</span>`;
-          }, 2000);
-        }
-        
-        alert("Error loading album: " + err.message);
-      }
-    }
-
-    function showAlbumModal(albumData) {
-      // Create modal
-      const modal = document.createElement('div');
-      modal.classList.add('album-modal');
-      modal.id = 'albumModal';
-      
-      // Handle both array of tracks and object with tracks property
-      const tracks = Array.isArray(albumData) ? albumData : (albumData.tracks || []);
-      const albumTitle = albumData.album_name || albumData.name || 'Album Tracks';
-      
-      const tracksHtml = tracks.map((track, index) => `
-        <li class="album-track">
-          <div class="track-info">
-            <h4>${escapeHtml(track.name || track.title || `Track ${index + 1}`)}</h4>
-            <p>${escapeHtml(track.artist || track.duration || '')}</p>
-          </div>
-          <button class="track-download" onclick='downloadTrack("${escapeHtml(track.url || track.download_url || '')}", "${escapeHtml(track.name || track.title || `Track ${index + 1}`)}", "${escapeHtml(track.artist || 'Unknown Artist')}")'>
-            ⬇️
-          </button>
-        </li>
-      `).join('');
-      
-      modal.innerHTML = `
-        <div class="album-modal-content">
-          <div class="album-header">
-            <h3>🎧 ${escapeHtml(albumTitle)}</h3>
-            <p>${tracks.length} tracks</p>
-          </div>
-          
-          ${tracks.length > 1 ? `
-            <button class="download-all-btn" onclick="downloadAllTracks()">
-              📀 Download All Tracks
-            </button>
-          ` : ''}
-          
-          <ul class="album-tracks">
-            ${tracksHtml}
-          </ul>
-          
-          <button class="modal-close" onclick="closeAlbumModal()">Close</button>
-        </div>
-      `;
-      
-      document.body.appendChild(modal);
-      
-      // Show modal with animation
-      setTimeout(() => {
-        modal.classList.add('visible');
-      }, 10);
-      
-      // Close on background click
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          closeAlbumModal();
-        }
-      });
-    }
-
-    function closeAlbumModal() {
-      const modal = document.getElementById('albumModal');
-      if (modal) {
-        modal.classList.remove('visible');
-        setTimeout(() => {
-          modal.remove();
-        }, 300);
-      }
-    }
-
-    async function downloadTrack(trackUrl, trackName, artistName) {
-      if (!trackUrl) {
-        alert('Track URL not available');
+      if (!q) {
+        resultsDiv.innerHTML = `<div class="no-results"><div class="no-results-icon">🔎</div><p>Please enter a song name to start searching 🎵</p></div>`;
+        resultsDiv.classList.add("visible");
         return;
       }
-      
-      // Use existing download function
-      await downloadSong(trackUrl, trackName, artistName);
-    }
 
-    async function downloadAllTracks() {
-      const modal = document.getElementById('albumModal');
-      const trackButtons = modal.querySelectorAll('.track-download');
-      
-      const downloadAllBtn = modal.querySelector('.download-all-btn');
-      if (downloadAllBtn) {
-        downloadAllBtn.innerHTML = '⏳ Starting Downloads...';
-        downloadAllBtn.disabled = true;
-      }
-      
-      // Download tracks with small delays to avoid overwhelming the server
-      for (let i = 0; i < trackButtons.length; i++) {
-        const button = trackButtons[i];
-        try {
-          button.click();
-          // Small delay between downloads
-          if (i < trackButtons.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        } catch (error) {
-          console.warn(`Failed to download track ${i + 1}:`, error);
-        }
-      }
-      
-      if (downloadAllBtn) {
-        downloadAllBtn.innerHTML = '✅ All Downloads Started!';
-        setTimeout(() => {
-          downloadAllBtn.innerHTML = '📀 Download All Tracks';
-          downloadAllBtn.disabled = false;
-        }, 3000);
-      }
-    }
-
-    async function downloadAlbum(albumUrl, albumName) {
+      loading.classList.add("active");
       try {
-        const albumBtn = event.target.closest('.download-album-btn');
-        if (albumBtn) {
-          const originalText = albumBtn.innerHTML;
-          albumBtn.innerHTML = `<span>⏳</span><span>Getting Album...</span>`;
-          albumBtn.disabled = true;
+        const res = await fetch(`${backendUrl}/search`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: q })
+        });
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
-          // First get album tracks
-          const res = await fetch(`${backendUrl}/album-tracks`, {
-            method: "POST",
-            headers: { 
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true"
-            },
-            body: JSON.stringify({ url: albumUrl })
-          });
+        const payload = await res.json();
+        const list = Array.isArray(payload) ? payload : (Array.isArray(payload.results) ? payload.results : []);
+        if (!list.length) {
+          resultsDiv.innerHTML = `<div class="no-results"><div class="no-results-icon">🤔</div><p>No songs found. Try a different search term.</p></div>`;
+          resultsDiv.classList.add("visible");
+          return;
+        }
 
-          const albumData = await res.json();
-          const tracks = Array.isArray(albumData) ? albumData : (albumData.tracks || []);
-          
-          albumBtn.innerHTML = `<span>📥</span><span>Downloading ${tracks.length} tracks...</span>`;
-          
-          // Add all tracks to queue
-          for (let i = 0; i < tracks.length; i++) {
-            const track = tracks[i];
-            const trackName = track.name || track.title || `Track ${i + 1}`;
-            const artistName = track.artist || 'Unknown Artist';
-            const trackUrl = track.url || track.download_url;
-            
-            if (trackUrl) {
-              // Small delay between each download
-              setTimeout(() => {
-                downloadSong(trackUrl, trackName, artistName);
-              }, i * 1500); // 1.5 second delay between each
-            }
-          }
-          
-          albumBtn.innerHTML = `<span>✅</span><span>Album Added to Queue!</span>`;
-          setTimeout(() => {
-            albumBtn.innerHTML = originalText;
-            albumBtn.disabled = false;
-          }, 3000);
-          
-        }
-      } catch (err) {
-        const albumBtn = event.target.closest('.download-album-btn');
-        if (albumBtn) {
-          albumBtn.innerHTML = `<span>❌</span><span>Failed</span>`;
-          albumBtn.disabled = false;
-          
-          setTimeout(() => {
-            albumBtn.innerHTML = `<span>📀</span><span>Download Album</span>`;
-          }, 2000);
-        }
-        
-        alert("Error downloading album: " + err.message);
+        const songs = list.map(normalizeSong);
+        resultsDiv.innerHTML = songs.map(cardHtml).join("");
+        resultsDiv.classList.add("visible");
+      } catch (e) {
+        resultsDiv.innerHTML = `<div class="no-results"><div class="no-results-icon">⚠️</div><p>Connection error: ${escapeHtml(e.message)}</p></div>`;
+        resultsDiv.classList.add("visible");
+      } finally {
+        loading.classList.remove("active");
       }
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+    // ---------- Download ----------
+    async function downloadSong(song) {
+      const title = song.title || "Track";
+      const artist = song.artist || "Unknown Artist";
+      // Prefer passing a Spotify track URL if we have it; otherwise pass "Artist - Title"
+      const queryOrUrl = song.url || `${artist} - ${title}`;
+
+      const id = addToQueue(title, artist, queryOrUrl);
+      setQueueStatus(id, "downloading");
+
+      try {
+        const res = await fetch(`${backendUrl}/download?url=${encodeURIComponent(queryOrUrl)}`, {
+          method: "GET"
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          throw new Error(`Download failed (${res.status}): ${txt || "server error"}`);
+        }
+
+        const blob = await res.blob();
+        // Determine filename
+        const disp = res.headers.get("Content-Disposition");
+        let fname = filenameFromDisposition(disp);
+        if (!fname) {
+          const safeArtist = artist.replace(/[\\/:*?"<>|]/g, "_");
+          const safeTitle  = title.replace(/[\\/:*?"<>|]/g, "_");
+          fname = `${safeArtist} - ${safeTitle}.mp3`;
+        }
+
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+
+        setQueueStatus(id, "completed");
+      } catch (e) {
+        console.error(e);
+        setQueueStatus(id, "failed");
+        alert(`❌ ${title}: ${e.message}`);
+      }
     }
 
-    // Start the app
-    init();
+    // ---------- Init / UX ----------
+    function init() {
+      const input = document.getElementById("songInput");
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          clearTimeout(searchTimeout);
+          searchSong();
+        }
+      });
+      input.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        const q = e.target.value.trim();
+        if (q.length >= 3) {
+          searchTimeout = setTimeout(searchSong, 600);
+        } else if (q.length === 0) {
+          const resultsDiv = document.getElementById("results");
+          resultsDiv.innerHTML = "";
+          resultsDiv.classList.remove("visible");
+        }
+      });
+    }
+    document.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
